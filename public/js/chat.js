@@ -1,48 +1,23 @@
-const API_URL = "http://localhost:3000";
-const ws = new WebSocket("ws://localhost:3000");
+const socket = io("/socket.io", {
+  query: { token: localStorage.getItem("accessToken") },
+});
 
-const chatId = window.location.pathname.split("/").pop();
-const messagesContainer = document.getElementById("messages");
-const messageForm = document.getElementById("messageForm");
+socket.on("connected", (data) => {
+  console.log(data.message);
+});
 
-ws.onopen = () => {
-  ws.send(
-    JSON.stringify({
-      type: "joinchat",
-      chatId: chatId,
-      token: localStorage.getItem("token"),
-    })
-  );
-};
+socket.on("receive_message", (message) => {
+  const messagesDiv = document.getElementById("messages");
+  const newMessage = document.createElement("div");
+  newMessage.textContent = `${message.sender}: ${message.content}`;
+  messagesDiv.appendChild(newMessage);
+});
 
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  if (data.type === "message") {
-    addMessage(data.message);
-  }
-};
-
-function addMessage(message) {
-  const messageElement = document.createElement("div");
-  messageElement.className = `message ${message.isBot ? "bot" : "user"}`;
-  messageElement.textContent = message.content;
-  messagesContainer.appendChild(messageElement);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-messageForm.addEventListener("submit", (e) => {
+document.getElementById("sendMessageForm").addEventListener("submit", (e) => {
   e.preventDefault();
-  const input = document.getElementById("messageInput");
-  const message = input.value.trim();
+  const message = document.getElementById("messageInput").value;
+  const chatId = window.location.pathname.split("/").pop();
 
-  if (message) {
-    ws.send(
-      JSON.stringify({
-        type: "send_message",
-        chatId: chatId,
-        message: message,
-      })
-    );
-    input.value = "";
-  }
+  socket.emit("send_message", { chatId, message });
+  document.getElementById("messageInput").value = "";
 });

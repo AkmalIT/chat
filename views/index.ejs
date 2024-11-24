@@ -1,20 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Chat App</title>
-    <link rel="stylesheet" href="/css/style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/index.css" />
+    <title>Chats</title>
   </head>
   <body>
-    <div class="main-container">
-      <header>
-        <h1>Welcome to Chat</h1>
-        <button id="logoutBtn">Logout</button>
-      </header>
-      <div class="chat-list-container">
-        <button id="createChatBtn">Create New Chat</button>
-        <div id="chatList"></div>
+    <div class="chat-list-container">
+      <h1>Welcome!</h1>
+
+      <div>
+        <form id="createChatForm">
+          <input type="text" id="chatName" placeholder="Chat Name" required />
+          <button type="submit">Create Chat</button>
+        </form>
       </div>
+
+      <ul id="chatList">
+      </ul>
     </div>
-    <script src="/js/main.js"></script>
+
+    <script>
+      async function loadChats() {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch("http://localhost:3000/chats/my", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) throw new Error("Failed to load chats");
+
+          const chats = await response.json();
+          const chatList = document.getElementById("chatList");
+          chatList.innerHTML = "";
+
+          chats.forEach((chat) => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+                    <a href="/chat/${chat.id}" class="chat-link">
+                        ${chat.name || "Chat #" + chat.id}
+                    </a>
+                `;
+            chatList.appendChild(li);
+          });
+        } catch (error) {
+          console.error("Error loading chats:", error);
+        }
+      }
+
+      document
+        .getElementById("createChatForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const chatName = document.getElementById("chatName").value;
+          const token = localStorage.getItem("token");
+
+          try {
+            const response = await fetch("http://localhost:3000/chats/create", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ name: chatName }),
+            });
+
+            if (!response.ok) throw new Error("Failed to create chat");
+
+            const chat = await response.json();
+            document.getElementById("chatName").value = "";
+
+            loadChats();
+          } catch (error) {
+            console.error("Error creating chat:", error);
+            alert(error.message);
+          }
+        });
+
+      loadChats();
+    </script>
   </body>
 </html>

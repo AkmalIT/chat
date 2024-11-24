@@ -1,38 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Login | Chat App</title>
-    <link rel="stylesheet" href="/css/style.css" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/login.css" />
+    <title>Login</title>
   </head>
   <body>
     <div class="auth-container">
-      <h2>Welcome Back</h2>
+      <h1 id="formTitle">Login</h1>
+
       <% if (error) { %>
       <div class="error-message"><%= error %></div>
       <% } %>
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" required />
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" required />
-        </div>
-        <button type="submit" class="btn-primary">Login</button>
+
+      <form id="authForm">
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit" id="submitButton">Login</button>
       </form>
-      <div class="auth-separator">
-        <span>or</span>
-      </div>
-      <a href="/auth/google" class="google-btn">
-        <img src="/img/google-icon.svg" alt="Google" />
-        Continue with Google
-      </a>
-      <p class="auth-links">
-        Don't have an account? <a href="/register">Register</a>
-      </p>
+
+      <p>or</p>
+
+      <a href="/auth/google" class="google-btn"> Continue with Google </a>
+
+      <p>Don't have an account? <a href="/register">Register</a></p>
     </div>
-    <script src="/js/auth.js"></script>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+      if (token) {
+        localStorage.setItem("token", token);
+        window.location.href = "/"; 
+      }
+
+      document
+        .getElementById("authForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          try {
+            const response = await fetch("http://localhost:3000/auth/login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              localStorage.setItem("token", data.token);
+              window.location.href = "/";
+            } else {
+              throw new Error(data.message || "Login failed");
+            }
+          } catch (error) {
+            alert(error.message);
+          }
+        });
+    </script>
   </body>
 </html>

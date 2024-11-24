@@ -1,21 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Chat Room</title>
-    <link rel="stylesheet" href="/css/style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/chat.css" />
+    <title>Chat</title>
   </head>
   <body>
     <div class="chat-container">
-      <div class="chat-messages" id="messages"></div>
+      <div class="chat-header">
+        <a href="/" class="back-button">← Back to Chats</a>
+        <h2 id="chatName">Chat</h2>
+      </div>
+
+      <div class="messages" id="messages"></div>
+
       <form id="messageForm" class="message-form">
         <input
           type="text"
           id="messageInput"
           placeholder="Type your message..."
+          required
         />
         <button type="submit">Send</button>
       </form>
     </div>
-    <script src="/js/chat.js"></script>
+
+    <script>
+      const chatId = window.location.pathname.split("/").pop();
+      const token = localStorage.getItem("token");
+
+      async function loadMessages() {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/chats/${chatId}/messages`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (!response.ok) throw new Error("Failed to load messages");
+
+          const messages = await response.json();
+          const messagesContainer = document.getElementById("messages");
+          messagesContainer.innerHTML = "";
+
+          messages.forEach((message) => {
+            const messageDiv = document.createElement("div");
+            messageDiv.className = `message ${
+              message.isUser ? "outgoing" : "incoming"
+            }`;
+            messageDiv.innerHTML = `
+                    <div class="message-content">${message.content}</div>
+                    <div class="message-info">
+                        <span class="message-time">${new Date(
+                          message.createdAt
+                        ).toLocaleTimeString()}</span>
+                    </div>
+                `;
+            messagesContainer.appendChild(messageDiv);
+          });
+
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        } catch (error) {
+          console.error("Error loading messages:", error);
+        }
+      }
+
+      document
+        .getElementById("messageForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const messageInput = document.getElementById("messageInput");
+          const content = messageInput.value;
+
+          try {
+            const response = await fetch(
+              `http://localhost:3000/chats/${chatId}/messages`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ content }),
+              }
+            );
+
+            if (!response.ok) throw new Error("Failed to send message");
+
+            messageInput.value = "";
+            await loadMessages();
+          } catch (error) {
+            console.error("Error sending message:", error);
+            alert(error.message);
+          }
+        });
+
+      loadMessages();
+    </script>
   </body>
 </html>
