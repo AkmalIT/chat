@@ -111,7 +111,6 @@ const Chat = () => {
     console.log("Sending message:", messageData);
     socket.emit("send_message", messageData);
 
-    // Add message to local state immediately for better UX
     setMessages((prev) => [
       ...prev,
       {
