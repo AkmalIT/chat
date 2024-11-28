@@ -1,26 +1,52 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContent";
 import "../styles/Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const handleGoogleAuth = useCallback(
+    async (code) => {
+      try {
+        const user = await googleLogin(code);
+        console.log(user);
+        navigate("/"); // Перенаправляем на главную страницу после успешного входа
+      } catch (error) {
+        console.error("Google login error:", error);
+      }
+    },
+    [googleLogin, navigate]
+  );
+
+  useEffect(() => {
+    const code = searchParams.get("code");
+    if (code) {
+      handleGoogleAuth(code); // Если code присутствует в URL, начинаем процесс входа через Google
+    }
+  }, [searchParams, handleGoogleAuth]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await login(email, password);
-      navigate("/");
+      navigate("/"); // Перенаправление после успешного входа
     } catch (error) {
       console.error("Login error:", error);
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "/auth/google";
+    try {
+      // Перенаправляем пользователя на маршрут для авторизации через Google
+      window.location.href = `http://localhost:3000/auth/google`;
+    } catch (error) {
+      console.error("Google login error:", error);
+    }
   };
 
   return (
@@ -47,7 +73,7 @@ const Login = () => {
           </button>
         </form>
         <button onClick={handleGoogleLogin} className="google-login-btn">
-          <img src="/google-icon.svg" alt="Google" className="google-icon" />
+          <img src="/icons8-google.svg" alt="Google" className="google-icon" />
           Login with Google
         </button>
         <p>

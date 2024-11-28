@@ -30,7 +30,7 @@ export const Register = () => {
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="input"
+            className="register-input"
             required
           />
           <input
@@ -38,7 +38,7 @@ export const Register = () => {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input"
+            className="register-input"
             required
           />
           <input
@@ -46,7 +46,7 @@ export const Register = () => {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="input"
+            className="register-input"
             required
           />
           <button type="submit" className="submit-btn">

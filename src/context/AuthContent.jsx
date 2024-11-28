@@ -40,18 +40,39 @@ export const AuthProvider = ({ children }) => {
     await checkAuth(accessToken);
   };
 
-  const register = async (email, password, name) => {
-    const response = await instance.post("/auth/register", {
-      email,
-      password,
-      name,
-    });
-    return response.data;
+  const googleLogin = async (code) => {
+    try {
+      const response = await instance.post("/auth/google/callback", { code });
+      const { accessToken, refreshToken, user } = response.data;
+
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      setUser(user);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error("Google login failed:", error);
+      throw error;
+    }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) throw new Error("Refresh token not found");
+
+    await instance.post(
+      "/auth/logout",
+      { refreshToken },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    );
+
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+
     setUser(null);
     setIsAuthenticated(false);
   };
@@ -63,7 +84,7 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         login,
-        register,
+        googleLogin,
         logout,
       }}
     >
