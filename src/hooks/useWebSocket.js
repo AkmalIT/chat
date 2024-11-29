@@ -8,7 +8,6 @@ export const useWebSocket = (url) => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
 
-    // Initialize socket connection with namespace
     socket.current = io(`${url}/socket.io`, {
       transports: ["websocket"],
       query: { token },
@@ -17,7 +16,6 @@ export const useWebSocket = (url) => {
       reconnectionDelay: 1000,
     });
 
-    // Connection events
     socket.current.on("connect", () => {
       console.log("Socket connected");
       setIsConnected(true);

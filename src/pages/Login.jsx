@@ -15,7 +15,7 @@ const Login = () => {
       try {
         const user = await googleLogin(code);
         console.log(user);
-        navigate("/"); // Перенаправляем на главную страницу после успешного входа
+        navigate("/"); 
       } catch (error) {
         console.error("Google login error:", error);
       }
@@ -26,7 +26,7 @@ const Login = () => {
   useEffect(() => {
     const code = searchParams.get("code");
     if (code) {
-      handleGoogleAuth(code); // Если code присутствует в URL, начинаем процесс входа через Google
+      handleGoogleAuth(code); 
     }
   }, [searchParams, handleGoogleAuth]);
 
@@ -34,7 +34,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await login(email, password);
-      navigate("/"); // Перенаправление после успешного входа
+      navigate("/"); 
     } catch (error) {
       console.error("Login error:", error);
     }
@@ -42,7 +42,6 @@ const Login = () => {
 
   const handleGoogleLogin = () => {
     try {
-      // Перенаправляем пользователя на маршрут для авторизации через Google
       window.location.href = `http://localhost:3000/auth/google`;
     } catch (error) {
       console.error("Google login error:", error);

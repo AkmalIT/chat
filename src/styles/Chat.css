@@ -5,21 +5,21 @@
 }
 
 :root {
-  --background-color-light: #f2f2f2; /* Светлый фон */
-  --primary-color: #333333; /* Темный фон для всего */
-  --secondary-color: #666666; /* Светло-серый для фона чатов */
-  --text-color-light: #222222; /* Темный текст для светлой темы */
-  --text-color-dark: #e0e0e0; /* Светлый текст для темной темы */
-  --sidebar-bg-dark: #1e1e1e; /* Тёмно-серый фон для сайдбара */
-  --sidebar-text-color: #ffffff; /* Белый текст в сайдбаре */
-  --sidebar-hover-border: #555555; /* Бордер при наведении */
-  --chat-bg-light: #1e1e1e; /* Тёмно-серый фон для чатов */
-  --chat-bg-dark: #333333; /* Темно-серый фон для чатов */
-  --message-user-bg: #d3d3d3; /* Светло-серый для сообщений пользователя */
-  --message-ai-bg: #505050; /* Темно-серый для сообщений AI */
-  --timestamp-color: rgba(255, 255, 255, 0.7); /* Легкий серый для времени */
-  --input-bg: #f0f0f0; /* Фон для ввода */
-  --button-size: 16px; /* Размер кнопок */
+  --background-color-light: #f2f2f2; 
+  --primary-color: #333333; 
+  --secondary-color: #666666; 
+  --text-color-light: #222222; 
+  --text-color-dark: #e0e0e0; 
+  --sidebar-bg-dark: #1e1e1e; 
+  --sidebar-text-color: #ffffff;  
+  --sidebar-hover-border: #555555; 
+  --chat-bg-light: #1e1e1e; 
+  --chat-bg-dark: #333333; 
+  --message-user-bg: #d3d3d3; 
+  --message-ai-bg: #505050; 
+  --timestamp-color: rgba(255, 255, 255, 0.7); 
+  --input-bg: #f0f0f0; 
+  --button-size: 16px; 
 }
 
 body.light {
@@ -256,8 +256,8 @@ body {
 }
 
 .sidebar .button {
-  font-size: 16px; /* Размер текста */
-  padding: 10px 20px; /* Паддинг для кнопок */
+  font-size: 16px; 
+  padding: 10px 20px; 
   margin: 10px 0;
   background-color: var(--primary-color);
   color: white;
