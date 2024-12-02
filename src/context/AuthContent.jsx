@@ -40,6 +40,15 @@ export const AuthProvider = ({ children }) => {
     await checkAuth(accessToken);
   };
 
+  const register = async (email, password, name) => {
+    const response = await instance.post("/auth/register", {
+      email,
+      password,
+      name,
+    });
+    return response.data;
+  };
+
   const googleLogin = async (code) => {
     try {
       const response = await instance.post("/auth/google/callback", { code });
@@ -86,6 +95,7 @@ export const AuthProvider = ({ children }) => {
         login,
         googleLogin,
         logout,
+        register
       }}
     >
       {!loading && children}
